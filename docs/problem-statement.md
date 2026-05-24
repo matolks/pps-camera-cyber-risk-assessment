@@ -1,0 +1,9 @@
+## Problem Statement
+
+Modern nuclear power plants increasingly rely on network-connected digital systems to support Physical Protection System (PPS) functions. These systems include IP-based security cameras used for alarm assessment, access control verification, and situational awareness. While networked surveillance improves operational capability, it also introduces cyber attack surfaces that did not exist in legacy analog systems.
+
+Under 10 CFR 73.54, the U.S. Nuclear Regulatory Commission (NRC) requires nuclear licensees to protect digital computer and communication systems that perform or support Safety, Security, and Emergency Preparedness (SSEP) functions. Digital assets whose compromise could adversely affect these functions may be classified as Critical Digital Assets (CDAs). For a PPS camera, this classification depends on the camera’s function, location, and consequence of compromise, not simply on whether the device has known vulnerabilities.
+
+A major challenge in nuclear and operational technology environments is that vulnerable systems cannot always be patched immediately. Vendor limitations, qualification requirements, safety certifications, system interdependencies, and continuous-availability requirements can delay or prevent routine firmware and software updates. As a result, nuclear cybersecurity programs often rely on compensating administrative, physical, and technical controls rather than patch-based remediation alone.
+
+This project assessed the cyber risk of an unpatched, network-connected PPS camera in a simulated nuclear facility environment. The work included CDA determination, system and asset characterization, vulnerability analysis, attack pathway modeling, consequence analysis, and mitigation design. The final mitigation strategy focused on reducing exploitability while preserving system availability through network segmentation, reverse proxy filtering, and firewall enforcement.
