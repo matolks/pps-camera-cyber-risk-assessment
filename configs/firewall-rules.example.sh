@@ -1,65 +1,55 @@
 #!/bin/bash
 
-# Firewall example for enforcing proxy-based access to a PPS camera.
-#
-# Replace these placeholders before use:
-# - CAMERA_INTERFACE
-# - NVR_INTERFACE
-# - CAMERA_PRIVATE_IP
-#
-# Example meaning:
-# - CAMERA_INTERFACE: interface connected toward the camera subnet
-# - NVR_INTERFACE: interface connected toward the NVR/client subnet
-# - CAMERA_PRIVATE_IP: private IP address of the protected camera
-#
-# This file is not a complete production hardening guide.
+# Firewall rules for forcing camera traffic through the proxy
+# Replace interface names and IPs before running
 
 set -e
 
-# Clear existing forwarding rules.
+CAMERA_IF="CAMERA_INTERFACE"
+NVR_IF="NVR_INTERFACE"
+CAMERA_IP="CAMERA_PRIVATE_IP"
+
+# Start from a clean FORWARD
 sudo iptables -F FORWARD
 
-# Default denying routed traffic between interfaces.
-# This prevents the proxy host from acting as an open router.
+# Do not allow this host to route traffic directly between subnets
 sudo iptables -P FORWARD DROP
 
-# Allow trusted NVR/client-side devices to reach the local proxy service.
+# Allow NVR/client traffic to reach the proxy
 sudo iptables -A INPUT \
-  -i NVR_INTERFACE \
+  -i "$NVR_IF" \
   -p tcp \
   --dport 80 \
   -j ACCEPT
 
-# Allow the proxy host itself to initiate HTTP connections to the camera.
-# This supports reverse-proxy traffic without allowing direct subnet forwarding.
+# Allow the proxy host to connect to the camera over HTTP
 sudo iptables -A OUTPUT \
-  -o CAMERA_INTERFACE \
+  -o "$CAMERA_IF" \
   -p tcp \
-  -d CAMERA_PRIVATE_IP \
+  -d "$CAMERA_IP" \
   --dport 80 \
   -j ACCEPT
 
-# Allow established and related return traffic.
+# Allow return traffic for connections already approved
 sudo iptables -A INPUT \
-  -m state --state ESTABLISHED,RELATED \
+  -m conntrack --ctstate ESTABLISHED,RELATED \
   -j ACCEPT
 
 sudo iptables -A OUTPUT \
-  -m state --state ESTABLISHED,RELATED \
+  -m conntrack --ctstate ESTABLISHED,RELATED \
   -j ACCEPT
 
-# Explicitly block direct routed traffic from the NVR/client subnet to the camera subnet.
+# Block direct routed traffic between the NVR/client side and camera side
 sudo iptables -A FORWARD \
-  -i NVR_INTERFACE \
-  -o CAMERA_INTERFACE \
+  -i "$NVR_IF" \
+  -o "$CAMERA_IF" \
   -j DROP
 
-# Explicitly block direct routed traffic from the camera subnet to the NVR/client subnet.
 sudo iptables -A FORWARD \
-  -i CAMERA_INTERFACE \
-  -o NVR_INTERFACE \
+  -i "$CAMERA_IF" \
+  -o "$NVR_IF" \
   -j DROP
 
-# Persist firewall rules.
+# Save rules so they survive reboot.
 sudo apt install iptables-persistent -y
 sudo netfilter-persistent save

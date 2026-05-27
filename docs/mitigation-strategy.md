@@ -1,24 +1,23 @@
 # Mitigation Strategy
 
-The evaluated Physical Protection System (PPS) camera system contained known vulnerabilities, but patching was treated as unavailable due to operational constraints. This reflects a common issue in operational technology environments where firmware updates may be delayed or restricted because of vendor limitations, safety qualification, system dependencies, change-control requirements, or availability concerns.
+The evaluated Physical Protection System (PPS) camera system contained known vulnerabilities, but patching was treated as unavailable under the project constraints. This reflects a common issue in operational technology environments, where firmware updates may be delayed by vendor limits, qualification requirements, system dependencies, change-control processes, or availability concerns.
 
-Because the vulnerability could not be removed at the device level, the mitigation strategy focused on reducing exposure and enforcing compensating controls around the vulnerable camera.
+Since the vulnerability could not be removed at the device level, the mitigation focused on reducing exposure and placing compensating controls around the camera.
 
 ## Design Goal
 
-The goal was to prevent untrusted or unsafe traffic from reaching the vulnerable camera while preserving normal camera/NVR functionality.
+The goal was to keep normal camera/NVR functionality while preventing untrusted or high-risk traffic from reaching the vulnerable camera.
 
 The selected mitigation used:
 
 - Network segmentation
 - Reverse proxy filtering
 - Firewall enforcement
-- Proxy-mediated access between the NVR and camera subnet
 - Logging of allowed and blocked requests
 
 ## Segmented Architecture
 
-The camera and NVR were separated into two different IPv4 subnets. The addresses below are sanitized private example addresses used only to explain the design:
+The camera and NVR were separated into two IPv4 subnets.
 
 | Network Segment     | Subnet           | Device      | Example Address | Role                                |
 | ------------------- | ---------------- | ----------- | --------------- | ----------------------------------- |
@@ -27,31 +26,15 @@ The camera and NVR were separated into two different IPv4 subnets. The addresses
 | NVR-side network    | `192.168.2.0/24` | NVR         | `192.168.2.50`  | Video recorder/operator-side device |
 | NVR-side network    | `192.168.2.0/24` | Proxy NIC 2 | `192.168.2.1`   | Proxy interface facing the NVR      |
 
-![Segmented Network Layout](diagrams/Segmented-Network-Layout.png)
+![Segmented Network Layout](../diagrams/Segmented-Network-Layout.png)
 
-The proxy VM was dual-homed, meaning it had one network interface connected to the camera-side subnet and another network interface connected to the NVR-side subnet.
-
-```text
-Camera-side subnet: 192.168.1.0/24
-
-Camera:      192.168.1.101
-Proxy NIC 1: 192.168.1.1
-
-NVR-side subnet: 192.168.2.0/24
-
-NVR:         192.168.2.50
-Proxy NIC 2: 192.168.2.1
-```
-
-The `.1` addresses were used as proxy-interface addresses for each subnet. On the camera side, `192.168.1.1` represented the proxy interface facing the camera. On the NVR side, `192.168.2.1` represented the proxy interface facing the NVR.
-
-This created two separate network zones instead of one flat network. The camera and NVR were no longer peers on the same local subnet.
+The proxy VM was dual-homed, meaning it had one interface on the camera-side subnet and one interface on the NVR-side subnet. This created two separate network zones instead of one flat network. The camera and NVR were no longer peers on the same local subnet.
 
 ## Why Two Subnets Matter
 
-In the baseline architecture, the camera, NVR, and any other connected device could communicate on the same local network. That flat design created a direct path to vulnerable camera services.
+In the baseline layout, the camera, NVR, and any other connected device could communicate on the same local network. That flat design created a direct path to vulnerable camera services.
 
-The segmented architecture changed the trust boundary:
+The segmented design changed the access path:
 
 ```text
 Before mitigation:
@@ -67,11 +50,11 @@ NVR / client device  --->  Proxy  --->  Camera
 Different subnets, controlled access path
 ```
 
-The NVR-side network could not directly reach the camera-side network unless traffic was explicitly allowed. This matters because CVE exploitation generally requires network reachability. If an attacker cannot directly reach the vulnerable endpoint, the attack path is reduced.
+The NVR-side network could not directly reach the camera-side network unless traffic was explicitly allowed. This matters because CVE exploitation usually requires network reachability. If an attacker cannot directly reach the vulnerable endpoint, the attack path is reduced.
 
 ## Reverse Proxy Role
 
-The reverse proxy acted as an application-layer control point.
+The reverse proxy acted as the application-layer control point.
 
 The NVR or client sent camera-related HTTP traffic to the proxy on the trusted side of the network:
 
@@ -87,7 +70,7 @@ Proxy-to-camera request
 192.168.1.1  --->  192.168.1.101:80
 ```
 
-This is the core design point: the NVR was not directly talking to the camera. The NVR talked to the proxy, and the proxy talked to the camera.
+The important point is that the NVR was not directly communicating with the camera. The NVR communicated with the proxy, and the proxy communicated with the camera.
 
 The reverse proxy enforced application-layer rules, including:
 
@@ -97,7 +80,7 @@ The reverse proxy enforced application-layer rules, including:
 - Blocking restricted stream or snapshot-style endpoints
 - Logging allowed and denied requests
 
-The full sanitized Nginx example is provided in:
+The sanitized Nginx example is provided in:
 
 ```text
 configs/nginx-camera-proxy.example.conf
@@ -123,15 +106,15 @@ Otherwise:
     Forward allowed traffic to the camera
 ```
 
-This does not fix the vulnerable firmware. It reduces exposure by preventing known dangerous request patterns from reaching the vulnerable service.
+This does not fix the vulnerable firmware. It reduces exposure by preventing known high-risk request patterns from reaching the vulnerable service.
 
-Production deployments should also account for URL encoding, request normalization, alternate HTTP methods, alternate API paths, and non-HTTP protocols.
+A production deployment would also need to account for URL encoding, request normalization, alternate HTTP methods, alternate API paths, and non-HTTP protocols.
 
 ## Firewall Role
 
-The firewall acted as a network-layer enforcement point.
+The firewall acted as the network-layer enforcement point.
 
-The firewall’s purpose was to make sure the proxy was the only allowed bridge between the two subnets. The safest policy was default deny.
+The firewall’s job was to make sure the proxy was the only allowed bridge between the two subnets. The safest policy was default deny.
 
 Conceptually:
 
@@ -148,9 +131,9 @@ Unknown device ---> Camera direct access
 Camera subnet ---> NVR subnet lateral movement
 ```
 
-The firewall did not allow general forwarding between the two subnets. If general forwarding were allowed, a device on the NVR-side subnet could bypass the reverse proxy and reach the camera directly.
+The firewall did not allow general forwarding between the two subnets. If forwarding were broadly allowed, a device on the NVR-side subnet could bypass the reverse proxy and reach the camera directly.
 
-The full sanitized firewall example is provided in:
+The sanitized firewall example is provided in:
 
 ```text
 configs/firewall-rules.example.sh
@@ -158,7 +141,7 @@ configs/firewall-rules.example.sh
 
 ## Firewall Enforcement Model
 
-The firewall model was designed around three rules of behavior:
+The firewall model used three basic rules:
 
 1. Permit trusted NVR-side devices to reach the proxy listener.
 2. Permit the proxy host to initiate approved traffic to the camera.
@@ -166,7 +149,7 @@ The firewall model was designed around three rules of behavior:
 
 This distinction matters. Reverse proxy traffic is not the same as direct forwarding. The proxy is an application-layer intermediary, not just a router.
 
-In the intended design, direct subnet-to-subnet forwarding remains blocked. The NVR-side device does not get a general route to the camera-side subnet. It only reaches the proxy service.
+In the intended design, direct subnet-to-subnet forwarding remains blocked. The NVR-side device does not receive a general route to the camera-side subnet. It only reaches the proxy service.
 
 ## Packet Flow Example
 
@@ -191,7 +174,7 @@ A normal allowed request follows this path:
 A blocked exploit-pattern request follows this path:
 
 ```text
-1. NVR-side device sends suspicious request to proxy:
+1. NVR-side device sends a suspicious request to proxy:
    192.168.2.x ---> 192.168.2.1:80
 
 2. Nginx checks the method, path, and query string.
@@ -227,7 +210,7 @@ However, the mitigation improves the security posture by:
 - Limiting lateral movement between network segments
 - Reducing the usefulness of same-network access on the NVR side
 - Providing logs for attempted access and blocked requests
-- Preserving required functionality without patching the camera firmware
+- Preserving required functionality without patching camera firmware
 
 ## What This Mitigates
 
@@ -271,7 +254,7 @@ If video streaming uses protocols other than HTTP, those protocols must be expli
 
 ## Summary
 
-The final mitigation used defense-in-depth to compensate for the inability to patch the vulnerable device. In the example design, the camera-side network used `192.168.1.0/24`, the NVR-side network used `192.168.2.0/24`, and the proxy VM had one interface on each subnet. These are illustrative private addresses, not raw production configuration values.
+The final mitigation used defense-in-depth to compensate for the inability to patch the vulnerable device. In the example design, the camera-side network used `192.168.1.0/24`, the NVR-side network used `192.168.2.0/24`, and the proxy VM had one interface on each subnet.
 
 The reverse proxy provided application-layer filtering, while the firewall enforced the network boundary. Together, these controls reduced direct exposure to the vulnerable camera, blocked known unsafe request patterns, limited lateral movement, and preserved operational availability.
 
