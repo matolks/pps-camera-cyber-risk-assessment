@@ -6,7 +6,7 @@ Since the vulnerability could not be removed at the device level, the mitigation
 
 ## Design Goal
 
-The goal was to keep normal camera/NVR functionality while preventing untrusted or high-risk traffic from reaching the vulnerable camera.
+The goal was to preserve normal camera/NVR functionality while preventing untrusted or high-risk traffic from reaching the vulnerable camera.
 
 The selected mitigation used:
 
@@ -80,7 +80,7 @@ The reverse proxy enforced application-layer rules, including:
 - Blocking restricted stream or snapshot-style endpoints
 - Logging allowed and denied requests
 
-The sanitized Nginx example is provided in:
+The sanitized NGINX example is provided in:
 
 ```text
 configs/nginx-camera-proxy.example.conf
@@ -114,7 +114,7 @@ A production deployment would also need to account for URL encoding, request nor
 
 The firewall acted as the network-layer enforcement point.
 
-The firewall’s job was to make sure the proxy was the only allowed bridge between the two subnets. The safest policy was default deny.
+The firewall's job was to make sure the proxy was the only allowed bridge between the two subnets. The safest policy was default deny.
 
 Conceptually:
 
@@ -159,9 +159,9 @@ A normal allowed request follows this path:
 1. NVR sends request to proxy:
    192.168.2.50 ---> 192.168.2.1:80
 
-2. Nginx receives and inspects the request.
+2. NGINX receives and inspects the request.
 
-3. If allowed, Nginx creates a new request to the camera:
+3. If allowed, NGINX creates a new request to the camera:
    192.168.1.1 ---> 192.168.1.101:80
 
 4. Camera replies to proxy:
@@ -177,9 +177,9 @@ A blocked exploit-pattern request follows this path:
 1. NVR-side device sends a suspicious request to proxy:
    192.168.2.x ---> 192.168.2.1:80
 
-2. Nginx checks the method, path, and query string.
+2. NGINX checks the method, path, and query string.
 
-3. If the request matches a blocked pattern, Nginx returns 403.
+3. If the request matches a blocked pattern, NGINX returns 403.
 
 4. The request is not forwarded to the camera.
 ```
@@ -254,7 +254,7 @@ If video streaming uses protocols other than HTTP, those protocols must be expli
 
 ## Summary
 
-The final mitigation used defense-in-depth to compensate for the inability to patch the vulnerable device. In the example design, the camera-side network used `192.168.1.0/24`, the NVR-side network used `192.168.2.0/24`, and the proxy VM had one interface on each subnet.
+The final mitigation used defense in depth to compensate for the inability to patch the vulnerable device. In the example design, the camera-side network used `192.168.1.0/24`, the NVR-side network used `192.168.2.0/24`, and the proxy VM had one interface on each subnet.
 
 The reverse proxy provided application-layer filtering, while the firewall enforced the network boundary. Together, these controls reduced direct exposure to the vulnerable camera, blocked known unsafe request patterns, limited lateral movement, and preserved operational availability.
 

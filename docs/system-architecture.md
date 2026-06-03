@@ -6,7 +6,7 @@ System availability and video integrity mattered because a lost, delayed, or man
 
 ## System Components
 
-The system included three main components:
+The system included three main component groups.
 
 ### IP Cameras
 
@@ -57,7 +57,7 @@ In this setup, the NVR also provided access to system configuration options, inc
 - User access controls
 - Network parameters
 
-Because the NVR video data and exposed configuration options, compromise of the NVR could affect both system visibility and the integrity of the camera environment.
+Because the NVR aggregated video data and exposed configuration options, compromise of the NVR could affect both system visibility and the integrity of the camera environment.
 
 ### PoE Switch
 
@@ -76,11 +76,11 @@ The original layout used a flat local network. Both cameras connected to the PoE
 
 ![Baseline Network Layout](../diagrams/Network-Layout.png)
 
-In this baseline design, the devices communicated on the same subnet. That made the system simple to connect and manage, but it also created a security weakness. Any device with access to the same subnet could potentially reach the cameras or NVR if additional controls were not in place.
+In this baseline design, the devices communicated on the same subnet. That made the system simple to connect and manage, but it also created a security weakness. Any device with access to that subnet could potentially reach the cameras or NVR if additional controls were not in place.
 
 ## Data Flow
 
-The cameras captured video and sent it to the NVR. The NVR stored the recordings and made the feeds available for live viewing, playback, and alarm assessment.
+The cameras captured video and sent it to the NVR. The NVR stored recordings and made the feeds available for live viewing, playback, and alarm assessment.
 
 This centralized flow was operationally simple, but it also created dependency risk. If an attacker gained access to the camera/NVR network, they could potentially affect:
 
@@ -96,7 +96,7 @@ This centralized flow was operationally simple, but it also created dependency r
 The baseline architecture created several security concerns:
 
 - Cameras and the NVR were reachable on the same local subnet.
-- Web management interfaces were accessible through IP-based communication.
+- Web management interfaces were accessible through IP communication.
 - Direct device-to-device access increased exposure.
 - A compromised endpoint on the subnet could attempt to reach camera or NVR services.
 - The NVR was a central dependency for viewing, recording, and configuration.
@@ -104,7 +104,7 @@ The baseline architecture created several security concerns:
 
 ## Architecture Risk
 
-The main architectural risk was not just that individual devices had known vulnerabilities. The larger issue was that the flat network made camera and NVR services reachable from the same local network.
+The main architectural risk was not only that individual devices had known vulnerabilities. The larger issue was that the flat network made camera and NVR services reachable from the same local network.
 
 An attacker with wired or wireless access to that subnet could potentially interact directly with the cameras or NVR. For a PPS camera supporting security functions, that access could degrade the facility's ability to detect, assess, and respond to unauthorized activity.
 

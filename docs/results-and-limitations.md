@@ -25,7 +25,7 @@ CDA determinations and security analysis were performed in a nuclear cybersecuri
 - 10 CFR 73.54
 - 10 CFR 73.55
 - NEI 10-04
-- RG 5.71
+- Regulatory Guide 5.71
 - NUREG/CR-7141
 
 Findings may not translate directly to non-nuclear critical infrastructure environments because other sectors use different regulatory requirements, asset classifications, and risk models.

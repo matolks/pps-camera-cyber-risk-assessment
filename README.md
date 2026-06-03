@@ -1,12 +1,12 @@
 # PPS Camera Cyber Risk Assessment
 
-A defensive OT cybersecurity case study on a network-connected Physical Protection System (PPS) camera and compensating controls under a no-patching constraint.
+A defensive OT cybersecurity case study evaluating a network-connected Physical Protection System (PPS) camera, Critical Digital Asset (CDA) determination, and compensating controls under a no-patching constraint.
 
 ## Overview
 
-This project was completed as a Penn State capstone sponsored by Idaho National Laboratory (INL). The work evaluated cyber risk in a PPS camera environment used for security monitoring in a simulated nuclear facility setting.
+This project was completed as a Penn State capstone sponsored by Idaho National Laboratory (INL). It evaluated cyber risk in a PPS camera environment used for security monitoring in a simulated nuclear facility setting.
 
-The system contained known vulnerabilities, but patching was treated as unavailable because of operational constraints. The main challenge was to assess the risk and design a mitigation strategy that reduced exploitability without disrupting camera availability.
+The system contained known vulnerabilities, but patching was treated as unavailable because of operational constraints. The core challenge was to assess the risk and design a mitigation strategy that reduced exploitability without disrupting camera availability.
 
 The project focused on asset classification, vulnerability analysis, attack-pathway modeling, and compensating-control design for operational technology (OT) environments.
 
@@ -19,13 +19,13 @@ The evaluated PPS camera environment included:
 - A Power-over-Ethernet (PoE) switch
 - Local network communication between the cameras and NVR
 
-The cameras produced video feeds used for surveillance and alarm assessment. The NVR stored footage, provided operator viewing capability, and allowed configuration of camera and alarm settings. The PoE switch provided network connectivity and power to the cameras.
+The cameras produced video feeds used for surveillance and alarm assessment. The NVR stored footage, supported operator viewing, and allowed configuration of camera and alarm settings. The PoE switch provided network connectivity and power to the cameras.
 
 ## Objectives
 
 The project objectives were to:
 
-- Determine whether the PPS camera qualified as a Critical Digital Asset (CDA)
+- Determine whether the PPS camera qualified as a Critical Digital Asset
 - Characterize the camera, NVR, and baseline network architecture
 - Assess known vulnerabilities, including CVE-2017-7921 and CVE-2021-36260
 - Model realistic attack pathways, with lab focus on wired and wireless access
@@ -36,15 +36,15 @@ The project objectives were to:
 
 ### System Classification
 
-The PPS camera system was evaluated using nuclear cybersecurity criteria from 10 CFR 73.54, NEI 10-04, NEI 08-09, and RG 5.71. The analysis focused on whether compromise or manipulation of the camera system could adversely affect Safety, Security, or Emergency Preparedness (SSEP) functions.
+The PPS camera system was evaluated using nuclear cybersecurity criteria from 10 CFR 73.54, NEI 10-04, NEI 08-09, and Regulatory Guide 5.71. The analysis focused on whether compromise or manipulation of the camera system could adversely affect Safety, Security, or Emergency Preparedness (SSEP) functions.
 
 ### Asset Characterization
 
-The project documented the system architecture, component roles, communication paths, and operational dependencies of the camera/NVR environment.
+The project documented the system architecture, component roles, communication paths, and operational dependencies of the camera and NVR environment.
 
 ### Requirements and Constraints
 
-The assessment used nuclear cybersecurity and OT security guidance, including 10 CFR 73.54, 10 CFR 73.55, NEI 10-04, NEI 08-09, NIST SP 800-82, and RG 5.71.
+The assessment used nuclear cybersecurity and OT security guidance, including 10 CFR 73.54, 10 CFR 73.55, NEI 10-04, NEI 08-09, NIST SP 800-82, and Regulatory Guide 5.71.
 
 A key constraint was that patching was not permitted. The system had to remain available while risk was reduced through compensating controls.
 
@@ -87,7 +87,9 @@ The mitigation used:
 
 ## Key Findings
 
-The CDA analysis found that the Owner-Controlled Area (OCA) perimeter camera qualified as a CDA because it supported surveillance and alarm assessment for the area it covered. The second camera, located inside the Protected Area (PA), was not classified as a CDA under the project assumptions because it provided supplemental interior surveillance rather than monitoring a required security-significant area.
+The CDA analysis found that the Owner-Controlled Area (OCA) perimeter camera qualified as a CDA because it supported surveillance and alarm assessment for the area it covered.
+
+The second camera, located inside the Protected Area (PA), was not classified as a CDA under the project assumptions because it provided supplemental interior surveillance rather than monitoring a required security-significant area.
 
 The vulnerability analysis found that CVE-2017-7921 could be validated in the controlled lab environment and created an authentication-bypass risk. CVE-2021-36260 was applicable by firmware range but was not successfully exploited under the tested configuration.
 

@@ -12,13 +12,13 @@ These pathways helped frame how an adversary could reach, manipulate, or degrade
 
 ## Attack Pathways Considered
 
-| Pathway      | Description                                                                                                          | Project Relevance                                                                                                      |
-| ------------ | -------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| Wired        | An attacker gains physical access to the internal Ethernet network.                                                  | Relevant because the cameras, NVR, and switch communicate over a local wired network.                                  |
-| Wireless     | An attacker gains unauthorized access through wireless proximity or wireless infrastructure.                         | Relevant where wireless access points or nearby wireless access could expose the camera system.                        |
-| PMMD         | Malicious software is introduced through portable media or mobile devices connected to the NVR or network equipment. | Relevant because removable media and maintenance devices can become entry points into otherwise isolated environments. |
-| Supply Chain | Hardware, firmware, or software is compromised during manufacturing, distribution, procurement, or maintenance.      | Relevant because embedded camera and NVR devices depend on vendor firmware, hardware integrity, and trusted updates.   |
-| Insider      | An authorized employee or contractor misuses legitimate access privileges.                                           | Relevant because trusted access can bypass some external network defenses.                                             |
+| Pathway      | Description                                                                                                          | Project Relevance                                                                                     |
+| ------------ | -------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Wired        | An attacker gains physical access to the internal Ethernet network.                                                  | The cameras, NVR, and switch communicate over a local wired network.                                  |
+| Wireless     | An attacker gains unauthorized access through wireless proximity or wireless infrastructure.                         | Wireless access points or nearby wireless access could expose the camera system.                      |
+| PMMD         | Malicious software is introduced through portable media or mobile devices connected to the NVR or network equipment. | Removable media and maintenance devices can become entry points into otherwise isolated environments. |
+| Supply Chain | Hardware, firmware, or software is compromised during manufacturing, distribution, procurement, or maintenance.      | Embedded camera and NVR devices depend on vendor firmware, hardware integrity, and trusted updates.   |
+| Insider      | An authorized employee or contractor misuses legitimate access privileges.                                           | Trusted access can bypass some external network defenses.                                             |
 
 ## Pathways Emulated
 
@@ -31,14 +31,14 @@ The remaining pathways were included in the threat model but were not directly e
 
 ## Vulnerabilities and Behaviors Evaluated
 
-The team evaluated known vulnerabilities and configuration risks affecting the Hikvision-based camera and NVR environment.
+The team evaluated known vulnerabilities and configuration risks affecting the Hikvision camera and NVR environment.
 
 Tested areas included:
 
 - CVE-2017-7921 authentication bypass
 - CVE-2021-36260 unauthenticated remote command execution
 - Unauthorized NVR configuration changes from another same-network device
-- Network-based configuration access
+- Network-accessible configuration interfaces
 - Authentication and access-control weaknesses
 - Exposure of camera and NVR management interfaces
 
@@ -58,7 +58,7 @@ The vulnerability research used:
 
 The attack-pathway analysis showed that the PPS camera environment created realistic cyber risk when vulnerable services were reachable from the same network.
 
-Key findings:
+Key findings included:
 
 - Known camera and NVR vulnerabilities are publicly documented.
 - Some vulnerabilities have public proof-of-concept material available.

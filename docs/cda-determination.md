@@ -1,8 +1,9 @@
 # Critical Digital Asset Determination
 
-Critical Digital Asset (CDA) determination is based on consequence. A device does not become a CDA just because it has a known vulnerability. It becomes a CDA when compromising that device could negatively affect Safety, Security, Emergency Preparedness (SSEP), or a system that supports one of those functions.
+Critical Digital Asset (CDA) determination is consequence driven. A device does not become a CDA simply because it has a known vulnerability. It becomes a CDA when compromise of the device could negatively affect a safety, security, emergency preparedness (SSEP), or support function.
 
 ![CDA Determination Flow](../diagrams/CDA-determination-flow.png)
+_Adapted from NRC Regulatory Guide 5.71, Revision 1, “Cyber Security Programs for Nuclear Power Reactors”_
 
 ## SSEP Functions
 
@@ -44,7 +45,7 @@ This project used a consequence-based CDA determination process aligned with 10 
 The main questions were:
 
 1. Does the asset perform or support an SSEP function?
-2. If compromised, could the asset negatively affect an SSEP function?
+2. If compromised, could the asset adversely affect an SSEP function?
 3. Is the asset a digital component of a critical system?
 
 These questions were not treated as a simple checklist. The final determination depended on the asset's function, location, connectivity, and consequence of compromise. A connection to a critical system can increase concern, but CDA classification still depends on whether compromise of the asset could credibly affect an SSEP function.
@@ -107,7 +108,7 @@ A general-purpose interior camera can improve situational awareness, but that al
 Compromise of Camera 2 could:
 
 - Reduce interior visibility
-- Decrease defense-in-depth
+- Decrease defense in depth
 - Remove supplemental recorded footage
 - Potentially assist adversary activity inside the PA
 
